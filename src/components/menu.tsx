@@ -10,6 +10,7 @@ import {
     SidebarProvider,
 } from "@/components/ui/sidebar";
 import { Search } from "lucide-react";
+import { motion } from 'framer-motion';
 
 export function Menu() {
     const games = [
@@ -66,14 +67,17 @@ export function Menu() {
                             <SidebarGroupContent>
                                 <SidebarMenu>
                                     <SidebarMenuItem className="rounded-lg transition hover:bg-green-400">
-                                        <SidebarMenuButton asChild className="w-full">
-                                            <a
+                                        <SidebarMenuButton className="w-full">
+                                            <motion.a
                                                 href="/search"
                                                 className="flex items-center gap-2 px-3 py-2 text-gray-900 hover:text-green-900"
+                                                initial={{ x: -100 }}  // Posição inicial fora da tela à esquerda
+                                                animate={{ x: 0 }}  // Posição final (normal)
+                                                transition={{ duration: 0.5 }}
                                             >
                                                 <Search className="w-3 h-3" />
                                                 <span>Search Pokemon</span>
-                                            </a>
+                                            </motion.a>
                                         </SidebarMenuButton>
                                     </SidebarMenuItem>
                                 </SidebarMenu>
