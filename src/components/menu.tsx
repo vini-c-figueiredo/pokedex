@@ -2,90 +2,181 @@ import {
     Sidebar,
     SidebarContent,
     SidebarGroup,
-    SidebarGroupContent,
     SidebarGroupLabel,
+    SidebarHeader,
     SidebarMenu,
+    SidebarMenuAction,
     SidebarMenuButton,
     SidebarMenuItem,
-    SidebarProvider,
+    SidebarMenuSub,
+    SidebarMenuSubButton,
+    SidebarMenuSubItem,
+    useSidebar
 } from "@/components/ui/sidebar";
-import { Search } from "lucide-react";
-import { motion } from 'framer-motion';
+import {
+    ChevronRight,
+    Folder,
+    Forward,
+    LucideProps,
+    MoreHorizontal,
+    Search,
+    SquareTerminal,
+    Trash2
+} from "lucide-react";
+import PokemonLogo from '../assets/Pokemonlogo.png';
+import {
+    Collapsible,
+    CollapsibleContent,
+    CollapsibleTrigger
+} from "./ui/collapsible";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger
+} from "./ui/dropdown-menu";
+
+type item = {
+    title: string,
+    url: string
+}
+
+type navMain = {
+    title: string,
+    url: string,
+    icon: React.ForwardRefExoticComponent<Omit<LucideProps, "ref"> & React.RefAttributes<SVGSVGElement>>
+    isActive: boolean,
+    items: item[]
+}
+
+type projects = {
+    name: string,
+    url: string,
+    icon: React.ForwardRefExoticComponent<Omit<LucideProps, "ref"> & React.RefAttributes<SVGSVGElement>>
+}
+
+type menuData = {
+    navMain: navMain[],
+    projects: projects[]
+}
+
+const data: menuData = {
+    navMain: [
+        {
+            title: "Games",
+            url: "/",
+            icon: SquareTerminal,
+            isActive: false,
+            items: [
+                { title: "Fire Red/Leaf Green", url: "/#" },
+                { title: "Heart Gold/Soul Silver", url: "/#" },
+                { title: "Diamond/Pearl/Emerald", url: "/#" },
+            ],
+        },
+    ],
+    projects: [
+        {
+            name: "Search Pokemon",
+            url: "/search",
+            icon: Search,
+        },
+    ],
+};
 
 export function Menu() {
-    const games = [
-        {
-            title: "Fire Red/Leaf Green",
-            url: "#",
-        },
-        {
-            title: "Heart Gold/Soul Silver",
-            url: "#",
-        },
-        {
-            title: "Diamond/Pearl/Emerald",
-            url: "#",
-        },
-    ];
+    const { isMobile } = useSidebar();
 
     return (
-        <>
-            <SidebarProvider>
-                <Sidebar className="h-screen w-56 bg-green-500 text-gray-800 shadow-lg">
-                    <SidebarContent className="flex flex-col gap-6 p-4">
-                        {/* Games Section */}
-                        <SidebarGroup>
-                            <SidebarGroupLabel className="text-lg font-semibold text-black">
-                                Games
-                            </SidebarGroupLabel>
-                            <SidebarGroupContent>
-                                <SidebarMenu>
-                                    {games.map((game) => (
-                                        <SidebarMenuItem
-                                            key={game.title}
-                                            className="rounded-lg transition hover:bg-green-400"
-                                        >
-                                            <SidebarMenuButton asChild className="w-full">
-                                                <a
-                                                    href={game.url}
-                                                    className="flex items-center gap-2 px-3 py-2 text-gray-900 hover:text-green-900"
-                                                >
-                                                    <span>{game.title}</span>
-                                                </a>
-                                            </SidebarMenuButton>
-                                        </SidebarMenuItem>
-                                    ))}
-                                </SidebarMenu>
-                            </SidebarGroupContent>
-                        </SidebarGroup>
+        <Sidebar collapsible="icon">
+            {/* Header */}
+            <SidebarHeader className="bg-green-600">
+                <a href="/">
+                    <img src={PokemonLogo} alt="Pokemon Logo" className="w-48 h-auto mx-auto" />
+                </a>
+            </SidebarHeader>
 
-                        {/* Search Section */}
-                        <SidebarGroup>
-                            <SidebarGroupLabel className="text-lg font-semibold text-black">
-                                Search
-                            </SidebarGroupLabel>
-                            <SidebarGroupContent>
-                                <SidebarMenu>
-                                    <SidebarMenuItem className="rounded-lg transition hover:bg-green-400">
-                                        <SidebarMenuButton className="w-full">
-                                            <motion.a
-                                                href="/search"
-                                                className="flex items-center gap-2 px-3 py-2 text-gray-900 hover:text-green-900"
-                                                initial={{ x: -100 }}  // Posição inicial fora da tela à esquerda
-                                                animate={{ x: 0 }}  // Posição final (normal)
-                                                transition={{ duration: 0.5 }}
-                                            >
-                                                <Search className="w-3 h-3" />
-                                                <span>Search Pokemon</span>
-                                            </motion.a>
+            {/* Main Navigation */}
+            <SidebarContent className="bg-green-600">
+                <SidebarGroup>
+                    <SidebarGroupLabel>Platform</SidebarGroupLabel>
+                    <SidebarMenu>
+                        {data.navMain.map((item) => (
+                            <Collapsible
+                                key={item.title}
+                                asChild
+                                defaultOpen={item.isActive}
+                                className="group/collapsible"
+                            >
+                                <SidebarMenuItem>
+                                    <CollapsibleTrigger asChild>
+                                        <SidebarMenuButton tooltip={item.title}>
+                                            {item.icon && <item.icon />}
+                                            <span>{item.title}</span>
+                                            <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
                                         </SidebarMenuButton>
-                                    </SidebarMenuItem>
-                                </SidebarMenu>
-                            </SidebarGroupContent>
-                        </SidebarGroup>
-                    </SidebarContent>
-                </Sidebar>
-            </SidebarProvider>
-        </>
+                                    </CollapsibleTrigger>
+                                    <CollapsibleContent>
+                                        <SidebarMenuSub>
+                                            {item.items?.map((subItem) => (
+                                                <SidebarMenuSubItem key={subItem.title}>
+                                                    <SidebarMenuSubButton asChild>
+                                                        <a href={subItem.url}>{subItem.title}</a>
+                                                    </SidebarMenuSubButton>
+                                                </SidebarMenuSubItem>
+                                            ))}
+                                        </SidebarMenuSub>
+                                    </CollapsibleContent>
+                                </SidebarMenuItem>
+                            </Collapsible>
+                        ))}
+                    </SidebarMenu>
+                </SidebarGroup>
+
+                {/* Projects */}
+                <SidebarGroup className="group-data-[collapsible=icon]:hidden">
+                    <SidebarGroupLabel>Projects</SidebarGroupLabel>
+                    <SidebarMenu>
+                        {data.projects.map((project) => (
+                            <SidebarMenuItem key={project.name}>
+                                <SidebarMenuButton asChild>
+                                    <a href={project.url}>
+                                        <project.icon />
+                                        <span>{project.name}</span>
+                                    </a>
+                                </SidebarMenuButton>
+                                <DropdownMenu>
+                                    <DropdownMenuTrigger asChild>
+                                        <SidebarMenuAction showOnHover>
+                                            <MoreHorizontal />
+                                            <span className="sr-only">More</span>
+                                        </SidebarMenuAction>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent
+                                        className="w-48 rounded-lg"
+                                        side={isMobile ? "bottom" : "right"}
+                                        align={isMobile ? "end" : "start"}
+                                    >
+                                        <DropdownMenuItem>
+                                            <Folder className="text-muted-foreground" />
+                                            <span>View Project</span>
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem>
+                                            <Forward className="text-muted-foreground" />
+                                            <span>Share Project</span>
+                                        </DropdownMenuItem>
+                                        <DropdownMenuSeparator />
+                                        <DropdownMenuItem>
+                                            <Trash2 className="text-muted-foreground" />
+                                            <span>Delete Project</span>
+                                        </DropdownMenuItem>
+                                    </DropdownMenuContent>
+                                </DropdownMenu>
+                            </SidebarMenuItem>
+                        ))}
+                    </SidebarMenu>
+                </SidebarGroup>
+            </SidebarContent>
+        </Sidebar>
     );
 }
